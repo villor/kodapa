@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <signal.h>
+#include "log.h"
 
 void handle_resize();
 void resize_signal();
@@ -10,6 +11,8 @@ int busy = 0;
 
 int main(int argc, char const *argv[])
 {
+	klog("Kodapa start...");
+
 	int ch;
 
 	signal(SIGWINCH, resize_signal);
@@ -32,6 +35,7 @@ int main(int argc, char const *argv[])
 
 	endwin();
 
+	klog("Kodapa end...");
 	return 0;
 }
 

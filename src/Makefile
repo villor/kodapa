@@ -1,5 +1,5 @@
 all:
-	gcc -O2 -Wall -lncurses -o kodapa main.c
+	gcc -O2 -Wall -lncurses -o kodapa main.c log.c
 
 clean:
 	rm -f kodapa
