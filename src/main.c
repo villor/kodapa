@@ -3,20 +3,23 @@
 #include <signal.h>
 #include "log.h"
 
-void handle_resize();
+void interrupt_signal();
 void resize_signal();
+void handle_resize();
 void handle_input();
+void kodapa_exit();
 
 int wresized = 0;
 int busy = 0;
 
 int main(int argc, char const *argv[])
 {
-	klog("Kodapa start...");
+	klog("== kodapa start ==");
 
 	int ch;
 
 	signal(SIGWINCH, resize_signal);
+	signal(SIGINT, interrupt_signal);
 
 	initscr();
 	cbreak();
@@ -29,14 +32,25 @@ int main(int argc, char const *argv[])
 
 		ch = getch();
 		busy = 1;
+		if(ch == 27) break;
 		handle_input(ch);
 		busy = 0;
 	}
 
-	endwin();
+	kodapa_exit();
+}
 
-	klog("Kodapa end...");
-	return 0;
+void kodapa_exit()
+{
+	endwin();
+	klog("== kodapa end ==");
+	exit(0);
+}
+
+void interrupt_signal()
+{
+	klog("SIGINT. Exiting...");
+	kodapa_exit();
 }
 
 void handle_input(int ch)
