@@ -1,4 +1,3 @@
-#include <ncurses.h>
 #include <stdlib.h>
 #include <signal.h>
 #include "log.h"
@@ -8,7 +7,6 @@
 void interrupt_signal();
 void resize_signal();
 void kodapa_exit();
-void init_ncurses();
 
 int wresized = 0;
 int busy = 0;
@@ -26,7 +24,6 @@ int main(int argc, char const *argv[])
 	signal(SIGWINCH, resize_signal);
 	signal(SIGINT, interrupt_signal);
 
-	init_ncurses();
 	editor_init();
 
 	while(1) {
@@ -35,10 +32,10 @@ int main(int argc, char const *argv[])
 			wresized = 0;
 		}
 
-		ch = getch();
+		ch = editor_get_input();
 		busy = 1;
 		if(ch == 27) break;
-		editor_input(ch);
+		editor_key_press(ch);
 		busy = 0;
 	}
 
@@ -48,19 +45,9 @@ int main(int argc, char const *argv[])
 void kodapa_exit()
 {
 	editor_cleanup();
-	endwin();
 	file_save("testsave.file");
 	klog("== kodapa end ==");
 	exit(0);
-}
-
-void init_ncurses()
-{
-	initscr();
-	cbreak();
-	keypad(stdscr, TRUE);
-	noecho();
-	refresh();
 }
 
 void interrupt_signal()

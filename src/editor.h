@@ -3,7 +3,8 @@
 
 int editor_init();
 void editor_cleanup();
-void editor_input();
+int editor_get_input();
+void editor_key_press(int ch);
 void editor_resized();
 
 #endif

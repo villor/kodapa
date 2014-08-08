@@ -6,31 +6,48 @@
 #include "log.h"
 #include "file.h"
 
+void draw_text();
+
 WINDOW *ewin;
+
+int linepos = 0;
 
 int editor_init()
 {
+	initscr();
+	cbreak();
+	noecho();
+	refresh();
+
 	editor_resized();
+
 	return 0;
 }
 
 void editor_cleanup()
 {
 	delwin(ewin);
+	endwin();
 }
 
 void editor_resized()
 {
 	int wrow, wcol;
+	int oldcury, oldcurx;
 
 	endwin();
 	refresh();
 	clear();
 	getmaxyx(stdscr, wrow, wcol);
 
+	getyx(ewin, oldcury, oldcurx);
 	delwin(ewin);
 	ewin = newwin(wrow,wcol, 0, 0);
+	keypad(ewin, TRUE);
+	wmove(ewin, oldcury, oldcurx);
 	wrefresh(ewin);
+
+	draw_text();
 }
 
 void move_cursor(int y, int x) {
@@ -38,7 +55,12 @@ void move_cursor(int y, int x) {
 	wrefresh(ewin);
 }
 
-void editor_input(int ch)
+int editor_get_input()
+{
+	return wgetch(ewin);
+}
+
+void editor_key_press(int ch)
 {
 	int y, x;
 	getyx(ewin, y, x);
@@ -57,11 +79,43 @@ void editor_input(int ch)
 			move_cursor(y, x + 1);
 			break;
 		default:
-			if(isprint(ch)) {
-				waddch(ewin, ch);
-				wrefresh(ewin);
-			}
+
 			break;
 	}
 }
 
+void draw_text() {
+	int eheight, txtheight, li;
+	int oldcury, oldcurx;
+
+	getyx(ewin, oldcury, oldcurx);
+	wmove(ewin, 0, 0);
+
+	eheight = getmaxy(ewin);
+	wclear(ewin);
+
+	if (linepos > n_line_indices)
+		linepos = n_line_indices;
+
+	txtheight = n_line_indices - linepos;
+	if (txtheight < 0)
+		txtheight = 0;
+	if (txtheight > eheight)
+		txtheight = eheight;
+
+	for (li = linepos; li < txtheight; li++) {
+		int i = 0;
+		while(1) {
+			if(file_buffer[line_indices[li] + i] != '\n' && file_buffer[line_indices[li] + i] != '\0') {
+				waddch(ewin, file_buffer[line_indices[li] + i]);
+				i++;
+				continue;
+			}
+			break;
+		}
+		waddch(ewin, '\n');
+	}
+
+	wmove(ewin, oldcury, oldcurx);
+	wrefresh(ewin);
+}
