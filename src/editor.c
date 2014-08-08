@@ -53,6 +53,21 @@ void editor_resized()
 
 void move_cursor(int y, int x)
 {
+	int eheight;
+	eheight = getmaxy(ewin);
+
+	/* Scroll up */
+	if (y < 0 && linepos > 0) {
+		linepos--;
+		draw_text();
+	}
+
+	/* Scroll down */
+	if (y > eheight - 1 && linepos < n_line_indices) {
+		linepos++;
+		draw_text();
+	}
+
 	wmove(ewin, y, x);
 	wrefresh(ewin);
 }
@@ -97,8 +112,10 @@ void draw_text()
 	eheight = getmaxy(ewin);
 	wclear(ewin);
 
-	if (linepos > n_line_indices)
-		linepos = n_line_indices;
+	if (linepos < 0)
+		linepos = 0;
+	if (linepos > n_line_indices - eheight)
+		linepos = n_line_indices - eheight;
 
 	txtheight = n_line_indices - linepos;
 	if (txtheight < 0)
@@ -106,11 +123,11 @@ void draw_text()
 	if (txtheight > eheight)
 		txtheight = eheight;
 
-	for (li = linepos; li < txtheight; li++) {
+	for (li = linepos; li - linepos < txtheight; li++) {
 		int i = 0;
 		while(1) {
 			if(file_buffer[line_indices[li] + i] != '\n' && file_buffer[line_indices[li] + i] != '\0') {
-				mvwaddch(ewin, li, i, file_buffer[line_indices[li] + i]);
+				mvwaddch(ewin, li - linepos, i, file_buffer[line_indices[li] + i]);
 				i++;
 				continue;
 			}
