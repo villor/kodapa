@@ -7,6 +7,7 @@
 #include "file.h"
 
 void draw_text();
+void move_cursor(int y, int x);
 
 WINDOW *ewin;
 
@@ -44,13 +45,14 @@ void editor_resized()
 	delwin(ewin);
 	ewin = newwin(wrow,wcol, 0, 0);
 	keypad(ewin, TRUE);
-	wmove(ewin, oldcury, oldcurx);
+	move_cursor(oldcury, oldcurx);
 	wrefresh(ewin);
 
 	draw_text();
 }
 
-void move_cursor(int y, int x) {
+void move_cursor(int y, int x)
+{
 	wmove(ewin, y, x);
 	wrefresh(ewin);
 }
@@ -84,7 +86,8 @@ void editor_key_press(int ch)
 	}
 }
 
-void draw_text() {
+void draw_text()
+{
 	int eheight, txtheight, li;
 	int oldcury, oldcurx;
 
@@ -107,15 +110,14 @@ void draw_text() {
 		int i = 0;
 		while(1) {
 			if(file_buffer[line_indices[li] + i] != '\n' && file_buffer[line_indices[li] + i] != '\0') {
-				waddch(ewin, file_buffer[line_indices[li] + i]);
+				mvwaddch(ewin, li, i, file_buffer[line_indices[li] + i]);
 				i++;
 				continue;
 			}
 			break;
 		}
-		waddch(ewin, '\n');
 	}
 
-	wmove(ewin, oldcury, oldcurx);
+	move_cursor(oldcury, oldcurx);
 	wrefresh(ewin);
 }
