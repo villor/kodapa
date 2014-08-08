@@ -53,7 +53,7 @@ void file_open(const char *path)
 int file_save(const char *path)
 {
 	FILE *fp;
-	if((fp = fopen(path, "a+"))) {
+	if((fp = fopen(path, "w"))) {
 		fputs(file_buffer, fp);
 		fclose(fp);
 		klog("File saved(%d lines): %s", n_line_indices, path);
