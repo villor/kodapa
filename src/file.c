@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "log.h"
 #include "file.h"
 
@@ -39,9 +40,11 @@ void file_open(const char *path)
 	line_indices[0] = 0;
 
 	int curr_index = 1;
-	for (int i = 0; i < sizeof (file_buffer); i++) {
-		if (file_buffer[i] == '\n')
+	for (int i = 0; i < strlen(file_buffer); i++) {
+		if (file_buffer[i] == '\n') {
 			line_indices[curr_index] = i + 1;
+			curr_index++;
+		}
 	}
 
 	klog("File opened. %d lines.", n_line_indices);
