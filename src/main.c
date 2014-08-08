@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
 void kodapa_exit()
 {
 	editor_cleanup();
-	file_save("testsave.file");
+	file_save("testsave.file.o");
 	klog("== kodapa end ==");
 	exit(0);
 }
