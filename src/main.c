@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "log.h"
+#include "file.h"
 
 void interrupt_signal();
 void resize_signal();
@@ -17,6 +18,11 @@ int main(int argc, char const *argv[])
 	klog("== kodapa start ==");
 
 	int ch;
+
+	if(argc > 0)
+		file_open(argv[1]);
+	else
+		file_open("");
 
 	signal(SIGWINCH, resize_signal);
 	signal(SIGINT, interrupt_signal);
@@ -43,6 +49,7 @@ int main(int argc, char const *argv[])
 void kodapa_exit()
 {
 	endwin();
+	file_save("testsave.file");
 	klog("== kodapa end ==");
 	exit(0);
 }
