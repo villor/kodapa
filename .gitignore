@@ -1,6 +1,6 @@
-# Kodapa specifics
-kodapa
-kodapa.log
+# Binary directories
+bin
+obj
 
 # System files
 Thumbs.db
