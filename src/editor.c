@@ -20,8 +20,6 @@ int editor_init()
 	noecho();
 	refresh();
 
-
-
 	editor_resized();
 
 	return 0;
@@ -69,6 +67,9 @@ void move_cursor(int y, int x)
 		linepos++;
 		draw_text();
 	}
+
+	if (y - linepos > n_line_indices - 1)
+		return;
 
 	wmove(ewin, y, x);
 	wrefresh(ewin);
