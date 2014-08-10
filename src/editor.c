@@ -20,6 +20,8 @@ int editor_init()
 	noecho();
 	refresh();
 
+
+
 	editor_resized();
 
 	return 0;
@@ -112,22 +114,27 @@ void draw_text()
 	eheight = getmaxy(ewin);
 	wclear(ewin);
 
-	if (linepos < 0)
-		linepos = 0;
+
 	if (linepos > n_line_indices - eheight)
 		linepos = n_line_indices - eheight;
+	if (linepos < 0)
+		linepos = 0;
 
 	txtheight = n_line_indices - linepos;
-	if (txtheight < 0)
-		txtheight = 0;
 	if (txtheight > eheight)
 		txtheight = eheight;
+	if (txtheight < 1)
+		txtheight = 1;
 
 	for (li = linepos; li - linepos < txtheight; li++) {
 		int i = 0;
 		while(1) {
-			if(file_buffer[line_indices[li] + i] != '\n' && file_buffer[line_indices[li] + i] != '\0') {
-				mvwaddch(ewin, li - linepos, i, file_buffer[line_indices[li] + i]);
+			if(file_buffer[line_indices[li] + i] != '\n'
+			   && file_buffer[line_indices[li] + i] != '\0') {
+				mvwaddch(ewin,
+					 li - linepos,
+					 i,
+					 file_buffer[line_indices[li] + i]);
 				i++;
 				continue;
 			}
