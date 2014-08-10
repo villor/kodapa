@@ -147,13 +147,20 @@ void draw_text()
 
 	for (li = linepos; li - linepos < txtheight; li++) {
 		int i = 0;
+		int x = 0;
 		while(1) {
 			if(file_buffer[line_indices[li] + i] != '\n'
 			   && file_buffer[line_indices[li] + i] != '\0') {
 				mvwaddch(ewin,
 					 li - linepos,
-					 i,
+					 x,
 					 file_buffer[line_indices[li] + i]);
+
+				if (file_buffer[line_indices[li] + i] == '\t')
+					x += TABSIZE;
+				else
+					x++;
+
 				i++;
 				continue;
 			}
