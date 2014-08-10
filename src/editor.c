@@ -10,6 +10,7 @@ void draw_text();
 void move_cursor(int y, int x);
 int init_ln_window(int y, int x, int height);
 int calc_num_digits(int num);
+int linelen(int index);
 
 WINDOW *ewin;	/* Editor window */
 WINDOW *lnwin;	/* Line-number window */
@@ -71,6 +72,8 @@ int init_ln_window(int y, int x, int height)
 void move_cursor(int y, int x)
 {
 	int eheight;
+	int lwidth;
+
 	eheight = getmaxy(ewin);
 
 	/* Scroll up */
@@ -87,6 +90,11 @@ void move_cursor(int y, int x)
 
 	if (y - linepos > n_line_indices - 1)
 		return;
+
+	lwidth = linelen(line_indices[linepos + y]);
+	if (x > lwidth) {
+		x = lwidth;
+	}
 
 	wmove(ewin, y, x);
 	wrefresh(ewin);
@@ -175,6 +183,26 @@ void draw_text()
 	move_cursor(oldcury, oldcurx);
 	wrefresh(ewin);
 	curs_set(1);
+}
+
+int linelen(int index)
+{
+	int i = 0;
+	int length = 0;
+	while(1) {
+		if(file_buffer[index + i] != '\n'
+		   && file_buffer[index + i] != '\0') {
+			if (file_buffer[index + i] == '\t')
+				length += TABSIZE;
+			else
+				length++;
+
+			i++;
+			continue;
+		}
+		break;
+	}
+	return length;
 }
 
 int calc_num_digits(int num)
