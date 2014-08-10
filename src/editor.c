@@ -9,6 +9,7 @@
 void draw_text();
 void move_cursor(int y, int x);
 int init_ln_window(int y, int x, int height);
+int calc_num_digits(int num);
 
 WINDOW *ewin;	/* Editor window */
 WINDOW *lnwin;	/* Line-number window */
@@ -58,13 +59,7 @@ void editor_resized()
 
 int init_ln_window(int y, int x, int height)
 {
-	int width = 1;
-	int n = n_line_indices;
-
-	while (n != 0) {
-		n /= 10;
-		width++;
-	}
+	int width = calc_num_digits(n_line_indices) + 2;
 
 	delwin(lnwin);
 	lnwin = newwin(height, width, y, x);
@@ -164,8 +159,8 @@ void draw_text()
 			}
 			break;
 		}
-		mvwprintw(lnwin, li - linepos, 0, "%d", li + 1);
 
+		mvwprintw(lnwin, li - linepos, calc_num_digits(n_line_indices) - calc_num_digits(li + 1) + 1, "%d", li + 1);
 	}
 
 	wrefresh(lnwin);
@@ -173,4 +168,14 @@ void draw_text()
 	move_cursor(oldcury, oldcurx);
 	wrefresh(ewin);
 	curs_set(1);
+}
+
+int calc_num_digits(int num)
+{
+	int count = 0;
+	while (num != 0) {
+		num /= 10;
+		count++;
+	}
+	return count;
 }
