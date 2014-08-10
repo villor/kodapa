@@ -8,8 +8,10 @@
 
 void draw_text();
 void move_cursor(int y, int x);
+int init_ln_window(int y, int x, int height);
 
-WINDOW *ewin;
+WINDOW *ewin;	/* Editor window */
+WINDOW *lnwin;	/* Line-number window */
 
 int linepos = 0;
 
@@ -35,20 +37,40 @@ void editor_resized()
 {
 	int wrow, wcol;
 	int oldcury, oldcurx;
+	int lnwinwidth;
 
 	endwin();
 	refresh();
 	clear();
 	getmaxyx(stdscr, wrow, wcol);
 
+	lnwinwidth = init_ln_window(0, 0, wrow);
+
 	getyx(ewin, oldcury, oldcurx);
 	delwin(ewin);
-	ewin = newwin(wrow,wcol, 0, 0);
+	ewin = newwin(wrow, wcol - lnwinwidth, 0, lnwinwidth);
 	keypad(ewin, TRUE);
 	move_cursor(oldcury, oldcurx);
 	wrefresh(ewin);
 
 	draw_text();
+}
+
+int init_ln_window(int y, int x, int height)
+{
+	int width = 1;
+	int n = n_line_indices;
+
+	while (n != 0) {
+		n /= 10;
+		width++;
+	}
+
+	delwin(lnwin);
+	lnwin = newwin(height, width, y, x);
+	wrefresh(lnwin);
+
+	return width;
 }
 
 void move_cursor(int y, int x)
@@ -109,12 +131,13 @@ void draw_text()
 	int eheight, txtheight, li;
 	int oldcury, oldcurx;
 
+	curs_set(0);
 	getyx(ewin, oldcury, oldcurx);
 	wmove(ewin, 0, 0);
 
 	eheight = getmaxy(ewin);
 	wclear(ewin);
-
+	wclear(lnwin);
 
 	if (linepos > n_line_indices - eheight)
 		linepos = n_line_indices - eheight;
@@ -141,8 +164,13 @@ void draw_text()
 			}
 			break;
 		}
+		mvwprintw(lnwin, li - linepos, 0, "%d", li + 1);
+
 	}
+
+	wrefresh(lnwin);
 
 	move_cursor(oldcury, oldcurx);
 	wrefresh(ewin);
+	curs_set(1);
 }
