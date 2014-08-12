@@ -2,7 +2,7 @@
 #include <signal.h>
 #include "log.h"
 #include "file.h"
-#include "editor.h"
+/*#include "editor.h"*/
 
 void interrupt_signal();
 void resize_signal();
@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
 	signal(SIGINT, interrupt_signal);
 	signal(SIGTERM, interrupt_signal);
 	signal(SIGSEGV, segfault_signal);
-
+/*
 	editor_init();
 
 	while(1) {
@@ -41,14 +41,14 @@ int main(int argc, char const *argv[])
 		editor_key_press(ch);
 		busy = 0;
 	}
-
+*/
 	kodapa_exit();
 }
 
 void kodapa_exit()
 {
-	editor_cleanup();
-	file_save("testsave.file.o");
+/*	editor_cleanup();
+*/	file_save("testsave.file.o");
 	klog("== kodapa end ==");
 	exit(0);
 }
@@ -64,14 +64,14 @@ void resize_signal()
 	if(busy) {
 		wresized = 1;
 	} else {
-		editor_resized();
-		wresized = 0;
+/*		editor_resized();
+*/		wresized = 0;
 	}
 }
 
 void segfault_signal()
 {
 	klog("SEGFAULT - cleaning up and exiting...");
-	editor_cleanup();
-	exit(1);
+/*	editor_cleanup();
+*/	exit(1);
 }
