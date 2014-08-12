@@ -6,6 +6,7 @@
 
 void interrupt_signal();
 void resize_signal();
+void segfault_signal();
 void kodapa_exit();
 
 int wresized = 0;
@@ -23,6 +24,8 @@ int main(int argc, char const *argv[])
 
 	signal(SIGWINCH, resize_signal);
 	signal(SIGINT, interrupt_signal);
+	signal(SIGTERM, interrupt_signal);
+	signal(SIGSEGV, segfault_signal);
 
 	editor_init();
 
@@ -64,4 +67,11 @@ void resize_signal()
 		editor_resized();
 		wresized = 0;
 	}
+}
+
+void segfault_signal()
+{
+	klog("SEGFAULT - cleaning up and exiting...");
+	editor_cleanup();
+	exit(1);
 }
