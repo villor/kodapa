@@ -24,6 +24,8 @@ int editor_init()
 	noecho();
 	refresh();
 
+	set_escdelay(25);
+
 	editor_resized();
 
 	return 0;
